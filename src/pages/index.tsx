@@ -13,6 +13,7 @@ import ReactFlow, {
 } from "reactflow";
 
 import { Button } from "@/components/ui/button";
+import useNodeStore from "@/stores/use-node-store";
 
 type PanePosition = {
   top: number | undefined;
@@ -85,14 +86,11 @@ function NodeContextMenu({
   );
 }
 
-const initialNodes = [
-  { id: "1", position: { x: 0, y: 0 }, data: { label: "Node 1" } },
-  { id: "2", position: { x: 0, y: 100 }, data: { label: "Node 2" } },
-];
-
 const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
 
 function NodeEditor() {
+  const initialNodes = useNodeStore((state) => state.nodes);
+
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [isPaneContextMenuOpen, setIsPaneContextMenuOpen] = useState(false);
@@ -203,12 +201,14 @@ function NodeEditor() {
     [setNodes],
   );
 
+  console.log(initialNodes);
+
   return (
     <div className="text-lg w-full absolute overflow-clip">
       <div className="w-screen h-[calc(100vh-50px)]">
         <ReactFlow
           ref={paneRef}
-          nodes={nodes}
+          nodes={initialNodes}
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
