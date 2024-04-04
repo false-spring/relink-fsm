@@ -1,14 +1,12 @@
+import "./app/globals.css";
+import "reactflow/dist/style.css";
+
+import { createRouter,RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import { RouterProvider, createRouter } from "@tanstack/react-router";
-
-// Import the generated route tree
-import { routeTree } from "./routeTree.gen";
-
-// Import global styles
-import "./app/globals.css";
 
 import { ThemeProvider } from "./components/theme-provider";
+import { routeTree } from "./routeTree.gen";
 
 // Create a new router instance
 const router = createRouter({ routeTree });

@@ -1,5 +1,7 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 
+import Index from "@/pages";
+
 export const Route = createLazyFileRoute("/")({
-  component: () => <div className="p-6 text-lg">FSM Editor</div>,
+  component: Index,
 });
