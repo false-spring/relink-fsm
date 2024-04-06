@@ -56,7 +56,7 @@ export default function Root() {
 
       <hr />
       <Outlet />
-      <TanStackRouterDevtools />
+      {import.meta.env.DEV && <TanStackRouterDevtools />}
     </>
   );
 }
