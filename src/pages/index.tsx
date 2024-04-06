@@ -1,5 +1,5 @@
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import ReactFlow, {
   Background,
   BackgroundVariant,
@@ -10,6 +10,7 @@ import ReactFlow, {
 } from "reactflow";
 import { useShallow } from "zustand/react/shallow";
 
+import { DefaultNode } from "@/components/nodes/default";
 import { Button } from "@/components/ui/button";
 import useGraphStore from "@/stores/use-graph-store";
 
@@ -104,6 +105,8 @@ function NodeEditor() {
       removeNode: state.removeNode,
     })),
   );
+
+  const nodeTypes = useMemo(() => ({ defaultComponent: DefaultNode }), []);
 
   const [isPaneContextMenuOpen, setIsPaneContextMenuOpen] = useState(false);
   const [paneContextMenuPosition, setPaneContextMenuPosition] =
@@ -214,6 +217,7 @@ function NodeEditor() {
           ref={paneRef}
           nodes={nodes}
           edges={edges}
+          nodeTypes={nodeTypes}
           onNodesChange={updateNodes}
           onEdgesChange={updateEdges}
           onPaneContextMenu={handlePaneContextMenu}

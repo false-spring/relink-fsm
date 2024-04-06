@@ -1,7 +1,7 @@
 import "./app/globals.css";
 import "reactflow/dist/style.css";
 
-import { createRouter,RouterProvider } from "@tanstack/react-router";
+import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
@@ -28,6 +28,6 @@ if (!rootElement.innerHTML) {
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <RouterProvider router={router} />
       </ThemeProvider>
-    </StrictMode>
+    </StrictMode>,
   );
 }

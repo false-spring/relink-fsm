@@ -12,7 +12,7 @@ import {
   AIBattleSelectCondition,
   AIBattleSequenceCondition,
   AIMoveAction,
-  BaseFSMNode,
+  BehaviorTreeComponent,
   BlackBoardBoolAction,
   BlackBoardIntCondition,
   EnableBaseAllTransition,
@@ -38,7 +38,7 @@ import {
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-const nodeWidth = 172;
+const nodeWidth = 300;
 const nodeHeight = 36;
 
 const getLayoutedElements = (
@@ -50,7 +50,9 @@ const getLayoutedElements = (
   dagreGraph.setGraph({ rankdir: direction });
 
   nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+    const height = Object.keys(node.data.value).length * 55 + 36;
+
+    dagreGraph.setNode(node.id, { width: nodeWidth, height });
   });
 
   edges.forEach((edge) => {
@@ -104,6 +106,7 @@ export function kvnodes_to_graph(kvnodes: KVNode[]): Graph {
       return [
         {
           id,
+          type: "defaultComponent",
           data: {
             label: nodeType,
             key: nodeType,
@@ -185,13 +188,13 @@ function isEmptyObject(obj: object): boolean {
 function getNodeGuid(nodeType: NodeType): number | null {
   if (typeof nodeType === "number") return null;
   if (isEmptyObject(nodeType)) return null;
-  return (nodeType as BaseFSMNode).guid_;
+  return (nodeType as BehaviorTreeComponent).guid_;
 }
 
 function getNodeParentGuid(nodeType: NodeType): number | null {
   if (typeof nodeType === "number") return null;
   if (isEmptyObject(nodeType)) return null;
-  return (nodeType as BaseFSMNode).parentGuid_;
+  return (nodeType as BehaviorTreeComponent).parentGuid_;
 }
 
 function getNodeNameHash(nodeType: NodeType): number | null {
@@ -265,5 +268,9 @@ function toNodeType(kvnode: KVNode): NodeType {
       return kvnode.value as ShotAttackAction;
     case "ShotMoveHomingAction":
       return kvnode.value as ShotMoveHomingAction;
+    default:
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      console.error(`Unknown node type: ${kvnode.key}`);
+      return kvnode.value as NodeType;
   }
 }

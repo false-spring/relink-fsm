@@ -6,9 +6,45 @@ export type Graph = {
 };
 
 export type KVNode = { key: NodeTypeKey; value: unknown };
+export type cVec4 = [x: number, y: number, z: number, w: number];
+export type f32 = number;
+export type s32 = number;
+export type u32 = number;
 
-export type Position = [x: number, y: number, z: number, w: number];
-export type BaseFSMNode = { guid_: number; parentGuid_: number };
+/* Base Components */
+
+export interface BehaviorTreeComponent {
+  guid_: number;
+  parentGuid_: number;
+}
+
+export type ActionComponent = BehaviorTreeComponent;
+
+export interface ConditionComponent {
+  isReverseSuccess_: boolean;
+}
+
+export type ShotHitBaseAction = BehaviorTreeComponent & {
+  offset_: cVec4;
+  size_: cVec4;
+  degreeX_: f32;
+  degreeY_: f32;
+  degreeZ_: f32;
+  shape_: s32;
+};
+
+export type ShotMoveBaseAction = ActionComponent & {
+  velocityBegin_: f32;
+  velocityEnd_: f32;
+  moveSecondMax_: f32;
+  isGroundFollow_: boolean;
+  isGroundFollow_MoveEnd_: boolean;
+  groundFollowHigh_: f32;
+  groundFollowLow_: f32;
+  groundFollowOffsetY_: f32;
+};
+
+/* Top-level Nodes */
 
 export type layerNo = number;
 
@@ -35,20 +71,23 @@ export type Transition = {
 };
 
 /* Empty Types */
+
 export type addAllTransition = object;
 export type addTransition = object;
 export type EnableBaseTransition = object;
 export type EnableBaseAllTransition = object;
 
-export type AIBattleDistanceCondition = BaseFSMNode & {
-  boolName_: string;
-  distance_: number;
-  isReverseSuccess_: boolean;
-  type_: number;
-  useBlackBoardValue_: boolean;
-};
+/* Behavior Tree Components */
 
-export type AIMoveAction = BaseFSMNode & {
+export type AIBattleDistanceCondition = BehaviorTreeComponent &
+  ConditionComponent & {
+    boolName_: string;
+    distance_: number;
+    type_: number;
+    useBlackBoardValue_: boolean;
+  };
+
+export type AIMoveAction = BehaviorTreeComponent & {
   boolName_: string;
   dashLength_: number;
   dist_: number;
@@ -56,9 +95,10 @@ export type AIMoveAction = BaseFSMNode & {
   isSetPosition_: boolean;
   isSmoothPass_: boolean;
   minMoveTime_: number;
-  positionBBName_: "PlayerAI_TargetPoint" | string;
+  // "PlayerAI_TargetPoint"
+  positionBBName_: string;
   positionHashValue_: number;
-  position: Position;
+  position: cVec4;
   randomChangeAddTime_: number;
   randomChangeTime_: number;
   randomLength_: number;
@@ -68,17 +108,17 @@ export type AIMoveAction = BaseFSMNode & {
   useBlackBoardValue_: boolean;
 };
 
-export type ActionEndCondition = BaseFSMNode & {
-  isAllEnd_: boolean;
-  isReverseSuccess_: boolean;
-};
+export type ActionEndCondition = BehaviorTreeComponent &
+  ConditionComponent & {
+    isAllEnd_: boolean;
+  };
 
-export type AIBattleSequenceCondition = BaseFSMNode & {
-  flagType_: number;
-  isReverseSuccess_: boolean;
-};
+export type AIBattleSequenceCondition = BehaviorTreeComponent &
+  ConditionComponent & {
+    flagType_: number;
+  };
 
-export type AIBattleAttackAction = BaseFSMNode & {
+export type AIBattleAttackAction = BehaviorTreeComponent & {
   attackType_: number;
   isCharge_: boolean;
   isRapid_: boolean;
@@ -86,39 +126,38 @@ export type AIBattleAttackAction = BaseFSMNode & {
   timer_: number;
 };
 
-export type AIBattleSelectCondition = BaseFSMNode & {
-  comboIndex_: number;
-  isReverseSuccess_: boolean;
-};
+export type AIBattleSelectCondition = BehaviorTreeComponent &
+  ConditionComponent & {
+    comboIndex_: number;
+  };
 
-export type AIBattleSelectComboAction = BaseFSMNode & {
+export type AIBattleSelectComboAction = BehaviorTreeComponent & {
   playerAICombos_: [Element: { rangeMax_: number; rangeMin_: number }];
 };
 
-export type TimerAction = BaseFSMNode & {
+export type TimerAction = BehaviorTreeComponent & {
   randomSeconds_: number;
   waitTimeSeconds_: number;
 };
 
-export type BlackBoardBoolAction = BaseFSMNode & {
+export type BlackBoardBoolAction = BehaviorTreeComponent & {
   setTiming_: number;
   /// "PlayerAI_SetBattleWaitMode"
   valueName_: string;
   value_: boolean;
 };
 
-export type FSMUnderLayerEndCondition = BaseFSMNode & {
-  isReverseSuccess_: boolean;
-};
+export type FSMUnderLayerEndCondition = BehaviorTreeComponent &
+  ConditionComponent;
 
-export type BlackBoardIntCondition = BaseFSMNode & {
+export type BlackBoardIntCondition = BehaviorTreeComponent & {
   /// "PlayerAI_OrderType"
   intName_: string;
   operatorType_: number;
   value_: number;
 };
 
-export type ShotPosAction = BaseFSMNode & {
+export type ShotPosAction = BehaviorTreeComponent & {
   degreeX_: number;
   degreeY_: number;
   isAddPosAndRot_: boolean;
@@ -126,13 +165,14 @@ export type ShotPosAction = BaseFSMNode & {
   isUpdateAttachParent_: boolean;
   isUseHomingTargetOnMoveInfo_: boolean;
   isUseOnMoveInfo_: boolean;
-  offset: Position;
+  offset: cVec4;
   partsNo_: number;
   scale_: number;
 };
 
-export type ShotTerminateAction = BaseFSMNode;
-export type ShotVfxAction = BaseFSMNode & {
+export type ShotTerminateAction = BehaviorTreeComponent;
+
+export type ShotVfxAction = BehaviorTreeComponent & {
   canEditScaleXYZ_: boolean;
   delCode_: number;
   effectId_: number;
@@ -142,7 +182,7 @@ export type ShotVfxAction = BaseFSMNode & {
   isHitEffect_: boolean;
   isSetHitEffectEspCtrl_: boolean;
   isUseParentObjId_: boolean;
-  offsetPos: Position;
+  offsetPos: cVec4;
   oneShot_: boolean;
   scaleY_: number;
   scaleZ_: number;
@@ -150,35 +190,29 @@ export type ShotVfxAction = BaseFSMNode & {
   seName_: string;
 };
 
-export type ShotTimerAction = BaseFSMNode & {
+export type ShotTimerAction = BehaviorTreeComponent & {
   isForceSet_: boolean;
   waitTimeSeconds_: number;
 };
 
-export type ShotStatusFlagCondition = BaseFSMNode & {
-  isReverseSuccess_: boolean;
-  isSuccessAny_: boolean;
-  statusFlagInfo_: [Element: { isEnable_: boolean; statusFlag_: number }];
-};
+export type ShotStatusFlagCondition = BehaviorTreeComponent &
+  ConditionComponent & {
+    isSuccessAny_: boolean;
+    statusFlagInfo_: [Element: { isEnable_: boolean; statusFlag_: number }];
+  };
 
-export type ShotBgLayAction = BaseFSMNode & {
+export type ShotBgLayAction = ActionComponent & {
   degreeX_: number;
   degreeY_: number;
   hitType_: number;
   isHitAttackOff_: boolean;
   isMoveToHitPos_: boolean;
   isResetRotHitPos_: boolean;
-  offset: Position;
+  offset: cVec4;
   radius_: number;
 };
 
-export type ShotAttackAction = BaseFSMNode & {
-  offset_: Position;
-  size_: Position;
-  degreeX_: number;
-  degreeY_: number;
-  degreeZ_: number;
-  shape_: number;
+export type ShotAttackAction = ShotHitBaseAction & {
   direction_: number;
   target_: number;
   globalType_: number;
@@ -214,21 +248,17 @@ export type ShotAttackAction = BaseFSMNode & {
   isHitOnlyHormingTarget_: boolean;
 };
 
-export type ShotMoveHomingAction = BaseFSMNode & {
-  gravityScale_: number;
-  groundFollowHigh_: number;
-  groundFollowLow_: number;
-  groundFollowOffsetY_: number;
-  isGroundFollow_: boolean;
-  isHomingOnlyY_: boolean;
+export type ShotMoveStraightAction = ShotMoveBaseAction & {
+  gravityScale_: f32;
   isRotateFall_: boolean;
+};
+
+export type ShotMoveHomingAction = ShotMoveStraightAction & {
+  isHomingOnlyY_: boolean;
   isStopDistanceAndAngle_: boolean;
-  moveSecondMax_: number;
   rotSpeed_: number;
   stopDegree_: number;
   stopDistance_: number;
-  velocityBegin_: number;
-  velocityEnd_: number;
 };
 
 export type NodeTypeKey =
@@ -262,9 +292,6 @@ export type NodeTypeKey =
 export type NodeType =
   | layerNo
   | addAllTransition
-  | addTransition
-  | EnableBaseTransition
-  | EnableBaseAllTransition
   | FSMNode
   | Transition
   | AIBattleDistanceCondition
