@@ -1,5 +1,6 @@
 import { Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
+import { useShallow } from "zustand/react/shallow";
 
 import {
   Menubar,
@@ -9,11 +10,17 @@ import {
   MenubarShortcut,
   MenubarTrigger,
 } from "@/components/ui/menubar";
+import { kvnodes_to_graph } from "@/lib/fsm";
 import { decodeFile } from "@/lib/msgpack";
-import useNodeStore from "@/stores/use-node-store";
+import useGraphStore from "@/stores/use-graph-store";
 
 export default function Root() {
-  const setNodes = useNodeStore((state) => state.setNodes);
+  const { setNodes, setEdges } = useGraphStore(
+    useShallow((state) => ({
+      setNodes: state.setNodes,
+      setEdges: state.setEdges,
+    })),
+  );
 
   const openFileDialog = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,57 +28,11 @@ export default function Root() {
       .showOpenFilePicker()
       .then((files: [FileSystemFileHandle]) => {
         const file = files[0];
-        decodeFile(file).then((data) => {
-          const nodes = data
-            .map((element, i) => {
-              const nodeType = element["key"];
-              let value = element["value"];
+        decodeFile(file).then((kvnodes) => {
+          const graph = kvnodes_to_graph(kvnodes);
 
-              if (Array.isArray(value)) {
-                value = element["value"].reduce((acc, pair) => {
-                  return {
-                    ...acc,
-                    [pair["key"]]: pair["value"],
-                  };
-                }, {});
-              }
-
-              if (
-                [
-                  "Transition",
-                  "layerNo",
-                  "addAllTransition",
-                  "addTransition",
-                  "EnableBaseTransition",
-                  "EnableBaseAllTransition",
-                ].includes(nodeType)
-              ) {
-                return null;
-              }
-
-              return {
-                id:
-                  typeof value === "object"
-                    ? value["guid_"].toString()
-                    : nodeType,
-                data: {
-                  label: nodeType,
-                  value,
-                },
-              };
-            })
-            .filter((node) => node !== null)
-            .map((node, i) => {
-              const x = (i % 10) * 175;
-              const y = Math.floor(i / 10) * 75;
-
-              return {
-                ...node,
-                position: { x, y },
-              };
-            });
-
-          setNodes(nodes);
+          setNodes(graph.nodes);
+          setEdges(graph.edges);
         });
       });
   };

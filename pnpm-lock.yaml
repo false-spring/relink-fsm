@@ -9,8 +9,8 @@ dependencies:
     specifier: ^2.1.3
     version: 2.1.3(react@18.2.0)
   '@msgpack/msgpack':
-    specifier: https://github.com/false-spring/msgpack-javascript.git#3cf5d2d77d9d76e6b3f886b96e5a7aeb54800ee0
-    version: github.com/false-spring/msgpack-javascript/3cf5d2d77d9d76e6b3f886b96e5a7aeb54800ee0
+    specifier: https://github.com/false-spring/msgpack-javascript.git#34a7aa443147a6be9eea25001301bb15162933c2
+    version: github.com/false-spring/msgpack-javascript/34a7aa443147a6be9eea25001301bb15162933c2
   '@radix-ui/react-context-menu':
     specifier: ^2.1.5
     version: 2.1.5(@types/react-dom@18.2.24)(@types/react@18.2.74)(react-dom@18.2.0)(react@18.2.0)
@@ -32,6 +32,9 @@ dependencies:
   clsx:
     specifier: ^2.1.0
     version: 2.1.0
+  object-hash:
+    specifier: ^3.0.0
+    version: 3.0.0
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -61,6 +64,9 @@ devDependencies:
   '@types/node':
     specifier: ^20.12.4
     version: 20.12.4
+  '@types/object-hash':
+    specifier: ^3.0.6
+    version: 3.0.6
   '@types/react':
     specifier: ^18.2.66
     version: 18.2.74
@@ -1866,6 +1872,10 @@ packages:
     resolution: {integrity: sha512-E+Fa9z3wSQpzgYQdYmme5X3OTuejnnTx88A6p6vkkJosR3KBz+HpE3kqNm98VE6cfLFcISx7zW7MsJkH6KwbTw==}
     dependencies:
       undici-types: 5.26.5
+    dev: true
+
+  /@types/object-hash@3.0.6:
+    resolution: {integrity: sha512-fOBV8C1FIu2ELinoILQ+ApxcUKz4ngq+IWUYrxSGjXzzjUALijilampwkMgEtJ+h2njAW3pi853QpzNVCHB73w==}
     dev: true
 
   /@types/prop-types@15.7.12:
@@ -4067,8 +4077,8 @@ packages:
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
-  github.com/false-spring/msgpack-javascript/3cf5d2d77d9d76e6b3f886b96e5a7aeb54800ee0:
-    resolution: {tarball: https://codeload.github.com/false-spring/msgpack-javascript/tar.gz/3cf5d2d77d9d76e6b3f886b96e5a7aeb54800ee0}
+  github.com/false-spring/msgpack-javascript/34a7aa443147a6be9eea25001301bb15162933c2:
+    resolution: {tarball: https://codeload.github.com/false-spring/msgpack-javascript/tar.gz/34a7aa443147a6be9eea25001301bb15162933c2}
     name: '@msgpack/msgpack'
     version: 3.0.0-beta2
     engines: {node: '>= 14'}

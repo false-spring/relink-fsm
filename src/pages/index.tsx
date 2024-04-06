@@ -1,19 +1,17 @@
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { useCallback, useRef, useState } from "react";
 import ReactFlow, {
-  addEdge,
   Background,
   BackgroundVariant,
   Node,
   OnConnect,
   ReactFlowProvider,
-  useEdgesState,
-  useNodesState,
   useReactFlow,
 } from "reactflow";
+import { useShallow } from "zustand/react/shallow";
 
 import { Button } from "@/components/ui/button";
-import useNodeStore from "@/stores/use-node-store";
+import useGraphStore from "@/stores/use-graph-store";
 
 type PanePosition = {
   top: number | undefined;
@@ -86,13 +84,27 @@ function NodeContextMenu({
   );
 }
 
-const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
-
 function NodeEditor() {
-  const initialNodes = useNodeStore((state) => state.nodes);
+  const {
+    nodes,
+    edges,
+    updateNodes,
+    updateEdges,
+    addEdge,
+    addNode,
+    removeNode,
+  } = useGraphStore(
+    useShallow((state) => ({
+      nodes: state.nodes,
+      edges: state.edges,
+      updateNodes: state.updateNodes,
+      updateEdges: state.updateEdges,
+      addEdge: state.addEdge,
+      addNode: state.addNode,
+      removeNode: state.removeNode,
+    })),
+  );
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [isPaneContextMenuOpen, setIsPaneContextMenuOpen] = useState(false);
   const [paneContextMenuPosition, setPaneContextMenuPosition] =
     useState<PanePosition>({
@@ -115,10 +127,7 @@ function NodeEditor() {
 
   const { screenToFlowPosition } = useReactFlow();
 
-  const onConnect: OnConnect = useCallback(
-    (params) => setEdges((e) => addEdge(params, e)),
-    [setEdges],
-  );
+  const onConnect: OnConnect = useCallback(addEdge, [addEdge]);
 
   const handleAddNode = useCallback(
     (position: Position) => {
@@ -126,16 +135,13 @@ function NodeEditor() {
 
       const flowPosition = screenToFlowPosition(position);
 
-      setNodes((nodes) => [
-        ...nodes,
-        {
-          id: (Math.random() * 100000).toString(),
-          data: { label: "Node" },
-          position: flowPosition,
-        },
-      ]);
+      addNode({
+        id: (Math.random() * 100000).toString(),
+        data: { label: "Node" },
+        position: flowPosition,
+      });
     },
-    [setNodes, screenToFlowPosition],
+    [addNode, screenToFlowPosition],
   );
 
   const handlePaneContextMenu = useCallback((event: React.MouseEvent) => {
@@ -196,22 +202,20 @@ function NodeEditor() {
     (id: string) => {
       setIsPaneContextMenuOpen(false);
       setIsNodeContextMenuOpen(false);
-      setNodes((nodes) => nodes.filter((node) => node.id !== id));
+      removeNode(id);
     },
-    [setNodes],
+    [removeNode],
   );
-
-  console.log(initialNodes);
 
   return (
     <div className="text-lg w-full absolute overflow-clip">
       <div className="w-screen h-[calc(100vh-50px)]">
         <ReactFlow
           ref={paneRef}
-          nodes={initialNodes}
+          nodes={nodes}
           edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
+          onNodesChange={updateNodes}
+          onEdgesChange={updateEdges}
           onPaneContextMenu={handlePaneContextMenu}
           onNodeContextMenu={handleNodeContextMenu}
           onPaneClick={handlePaneClick}

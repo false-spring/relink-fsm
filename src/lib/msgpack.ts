@@ -1,12 +1,15 @@
 import { decode } from "@msgpack/msgpack/src";
 
-export function decodeFile(file: FileSystemFileHandle) {
-  console.log(file);
+import type { KVNode } from "@/types";
 
-  return file.getFile().then((file) => {
-    return file.arrayBuffer().then((buffer) => {
-      const data = decode(new Uint8Array(buffer));
+export function decodeFile(file: FileSystemFileHandle): Promise<Array<KVNode>> {
+  return file
+    .getFile()
+    .then((file) => {
+      return file.arrayBuffer();
+    })
+    .then((buffer) => {
+      const data = decode(new Uint8Array(buffer)) as KVNode[];
       return data;
     });
-  });
 }
