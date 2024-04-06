@@ -62,7 +62,7 @@ export type FSMNode = {
 
 export type Transition = {
   conditionGuid_: number;
-  conditionGuids: [Element: number];
+  conditionGuids_: [{ Element: number }];
   fromNodeGuid_: number;
   isEndTransition_: boolean;
   isFailedTransition_: boolean;

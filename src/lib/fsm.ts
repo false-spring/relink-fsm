@@ -130,14 +130,27 @@ export function kvnodes_to_graph(kvnodes: KVNode[]): Graph {
       const value = node.data.value as Transition;
 
       const self = node.id;
+
       const from =
         guid_to_id_map[value.fromNodeGuid_] ||
         namehash_to_id_map[value.fromNodeGuid_];
+
       const to =
         guid_to_id_map[value.toNodeGuid_] ||
         namehash_to_id_map[value.toNodeGuid_];
 
+      const conditions = value.conditionGuids_.map((container) => {
+        const condition = guid_to_id_map[container.Element];
+
+        return {
+          id: `${self}-to-${condition}`,
+          source: condition,
+          target: self,
+        };
+      });
+
       return [
+        ...conditions,
         {
           id: `${self}-to-${from}`,
           source: from,
