@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Handle, NodeProps, Position } from "reactflow";
 
-type Default = { label: string };
+type Default = { label: string; value: unknown };
 
 export function DefaultNode({
   data,

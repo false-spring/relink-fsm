@@ -9,7 +9,7 @@ import { ThemeProvider } from "./components/theme-provider";
 import { routeTree } from "./routeTree.gen";
 
 // Create a new router instance
-const router = createRouter({ routeTree });
+const router = createRouter({ routeTree, basepath: "/relink-fsm" });
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {

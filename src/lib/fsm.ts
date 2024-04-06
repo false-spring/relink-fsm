@@ -269,7 +269,6 @@ function toNodeType(kvnode: KVNode): NodeType {
     case "ShotMoveHomingAction":
       return kvnode.value as ShotMoveHomingAction;
     default:
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       console.error(`Unknown node type: ${kvnode.key}`);
       return kvnode.value as NodeType;
   }
