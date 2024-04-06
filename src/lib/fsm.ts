@@ -1,4 +1,4 @@
-import dagre from "dagre";
+import dagre from "@dagrejs/dagre";
 import hash from "object-hash";
 import { Edge, Node } from "reactflow";
 
