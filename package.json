@@ -21,6 +21,7 @@
     "@tanstack/react-router": "^1.26.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "dagre": "^0.8.5",
     "object-hash": "^3.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@tanstack/router-devtools": "^1.26.7",
     "@tanstack/router-vite-plugin": "^1.26.8",
+    "@types/dagre": "^0.7.52",
     "@types/node": "^20.12.4",
     "@types/object-hash": "^3.0.6",
     "@types/react": "^18.2.66",

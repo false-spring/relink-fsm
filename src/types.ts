@@ -161,6 +161,76 @@ export type ShotStatusFlagCondition = BaseFSMNode & {
   statusFlagInfo_: [Element: { isEnable_: boolean; statusFlag_: number }];
 };
 
+export type ShotBgLayAction = BaseFSMNode & {
+  degreeX_: number;
+  degreeY_: number;
+  hitType_: number;
+  isHitAttackOff_: boolean;
+  isMoveToHitPos_: boolean;
+  isResetRotHitPos_: boolean;
+  offset: Position;
+  radius_: number;
+};
+
+export type ShotAttackAction = BaseFSMNode & {
+  offset_: Position;
+  size_: Position;
+  degreeX_: number;
+  degreeY_: number;
+  degreeZ_: number;
+  shape_: number;
+  direction_: number;
+  target_: number;
+  globalType_: number;
+  type_: number;
+  reaction_: number;
+  hitFlag_: number;
+  categoryFlag_: number;
+  element_: number;
+  attackRate_: number;
+  breakRate_: number;
+  spArtsRate_: number;
+  hitStopSecond_: number;
+  hitVibrationType_: number;
+  lifeSecond_: number;
+  multiHitIntervalSecond_: number;
+  knockBackRate_: number;
+  damageMovementRate_: number;
+  damageMovementRateY_: number;
+  isHitOnce_: boolean;
+  isMoveToHitPos_: boolean;
+  isSetAttackerPos_: boolean;
+  isSetAttackerHitList_: boolean;
+  isClearHitList_: boolean;
+  multiHitLimit_: number;
+  isSwept_: boolean;
+  debuffList_: [];
+  attackClearTime_: number;
+  appropriStartDist: number;
+  appropriEndDist: number;
+  notAppropriDistAtkRate_: number;
+  isTakeOverAppropriDist_: boolean;
+  isAlreadyHitClearEachEntity_: boolean;
+  isHitOnlyHormingTarget_: boolean;
+};
+
+export type ShotMoveHomingAction = BaseFSMNode & {
+  gravityScale_: number;
+  groundFollowHigh_: number;
+  groundFollowLow_: number;
+  groundFollowOffsetY_: number;
+  isGroundFollow_: boolean;
+  isHomingOnlyY_: boolean;
+  isRotateFall_: boolean;
+  isStopDistanceAndAngle_: boolean;
+  moveSecondMax_: number;
+  rotSpeed_: number;
+  stopDegree_: number;
+  stopDistance_: number;
+  velocityBegin_: number;
+  velocityEnd_: number;
+};
+
 export type NodeTypeKey =
   | "layerNo"
   | "addAllTransition"
@@ -184,7 +254,10 @@ export type NodeTypeKey =
   | "ShotTerminateAction"
   | "ShotVfxAction"
   | "ShotTimerAction"
-  | "ShotStatusFlagCondition";
+  | "ShotStatusFlagCondition"
+  | "ShotBgLayAction"
+  | "ShotAttackAction"
+  | "ShotMoveHomingAction";
 
 export type NodeType =
   | layerNo
@@ -209,4 +282,7 @@ export type NodeType =
   | ShotTerminateAction
   | ShotVfxAction
   | ShotTimerAction
-  | ShotStatusFlagCondition;
+  | ShotStatusFlagCondition
+  | ShotBgLayAction
+  | ShotAttackAction
+  | ShotMoveHomingAction;
