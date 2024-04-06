@@ -15,12 +15,18 @@ import { decodeFile } from "@/lib/msgpack";
 import useGraphStore from "@/stores/use-graph-store";
 
 export default function Root() {
-  const { setNodes, setEdges } = useGraphStore(
+  const { filename, setFilename, setNodes, setEdges } = useGraphStore(
     useShallow((state) => ({
+      filename: state.filename,
+      setFilename: state.setFilename,
       setNodes: state.setNodes,
       setEdges: state.setEdges,
     })),
   );
+
+  document.title = filename
+    ? `Relink FSM Tool - ${filename}`
+    : "Relink FSM Tool";
 
   const openFileDialog = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,6 +34,8 @@ export default function Root() {
       .showOpenFilePicker()
       .then((files: [FileSystemFileHandle]) => {
         const file = files[0];
+
+        setFilename(file.name);
 
         setNodes([]);
         setEdges([]);
@@ -52,6 +60,7 @@ export default function Root() {
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>
+        <h1>{filename}</h1>
       </Menubar>
 
       <hr />

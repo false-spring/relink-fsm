@@ -1,6 +1,7 @@
 import { Edge, Node } from "reactflow";
 
 export type Graph = {
+  filename: string;
   nodes: Node[];
   edges: Edge[];
 };

@@ -13,6 +13,7 @@ import { create } from "zustand";
 import { Graph } from "@/types";
 
 export type GraphStore = Graph & {
+  setFilename: (filename: string) => void;
   updateNodes: (nodes: NodeChange[]) => void;
   updateEdges: (nodes: EdgeChange[]) => void;
   removeNode: (id: string) => void;
@@ -23,8 +24,10 @@ export type GraphStore = Graph & {
 };
 
 const useGraphStore = create<GraphStore>()((set, get) => ({
+  filename: "",
   nodes: [],
   edges: [],
+  setFilename: (filename) => set({ filename }),
   setNodes: (nodes) => set({ nodes }),
   setEdges: (edges) => set({ edges }),
   removeNode: (id) =>

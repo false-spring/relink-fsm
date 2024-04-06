@@ -80,7 +80,9 @@ const getLayoutedElements = (
   return { nodes, edges };
 };
 
-export function kvnodes_to_graph(kvnodes: KVNode[]): Graph {
+export function kvnodes_to_graph(
+  kvnodes: KVNode[],
+): Pick<Graph, "nodes" | "edges"> {
   const guid_to_id_map: Record<number, string> = {};
   const namehash_to_id_map: Record<number, string> = {};
 
