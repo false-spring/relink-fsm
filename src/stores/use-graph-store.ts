@@ -22,17 +22,23 @@ export type GraphStore = Graph & {
   setEdges: (edges: Edge[]) => void;
 };
 
-const useGraphStore = create<GraphStore>()((set) => ({
+const useGraphStore = create<GraphStore>()((set, get) => ({
   nodes: [],
   edges: [],
   setNodes: (nodes) => set({ nodes }),
   setEdges: (edges) => set({ edges }),
   removeNode: (id) =>
     set((state) => ({ nodes: state.nodes.filter((n) => n.id !== id) })),
-  updateNodes: (changes) =>
-    set((state) => ({ nodes: applyNodeChanges(changes, state.nodes) })),
-  updateEdges: (changes) =>
-    set((state) => ({ edges: applyEdgeChanges(changes, state.edges) })),
+  updateNodes: (changes: NodeChange[]) => {
+    set({
+      nodes: applyNodeChanges(changes, get().nodes),
+    });
+  },
+  updateEdges: (changes: EdgeChange[]) => {
+    set({
+      edges: applyEdgeChanges(changes, get().edges),
+    });
+  },
   addEdge: (params) =>
     set((state) => ({ edges: addEdge(params, state.edges) })),
   addNode: (node) => set((state) => ({ nodes: [...state.nodes, node] })),

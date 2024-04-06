@@ -3,6 +3,8 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import ReactFlow, {
   Background,
   BackgroundVariant,
+  Controls,
+  MiniMap,
   Node,
   OnConnect,
   ReactFlowProvider,
@@ -13,6 +15,8 @@ import { useShallow } from "zustand/react/shallow";
 import { DefaultNode } from "@/components/nodes/default";
 import { Button } from "@/components/ui/button";
 import useGraphStore from "@/stores/use-graph-store";
+
+const proOptions = { hideAttribution: true };
 
 type PanePosition = {
   top: number | undefined;
@@ -85,7 +89,18 @@ function NodeContextMenu({
   );
 }
 
+const nodeColor = (node: Node) => {
+  switch (node.type) {
+    default:
+      return "#00000";
+  }
+};
+
 function NodeEditor() {
+  const paneRef = useRef<HTMLDivElement | null>(null);
+
+  const { screenToFlowPosition } = useReactFlow();
+
   const {
     nodes,
     edges,
@@ -126,9 +141,6 @@ function NodeEditor() {
     right: undefined,
     bottom: undefined,
   });
-  const paneRef = useRef<HTMLDivElement | null>(null);
-
-  const { screenToFlowPosition } = useReactFlow();
 
   const onConnect: OnConnect = useCallback(addEdge, [addEdge]);
 
@@ -225,8 +237,13 @@ function NodeEditor() {
           onPaneClick={handlePaneClick}
           onConnect={onConnect}
           fitView
+          maxZoom={1}
+          minZoom={0.0001}
+          proOptions={proOptions}
         >
           <Background variant={BackgroundVariant.Dots} gap={24} size={1} />
+          <Controls />
+          <MiniMap nodeColor={nodeColor} />
         </ReactFlow>
       </div>
       {isPaneContextMenuOpen && (

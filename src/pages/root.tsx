@@ -28,6 +28,10 @@ export default function Root() {
       .showOpenFilePicker()
       .then((files: [FileSystemFileHandle]) => {
         const file = files[0];
+
+        setNodes([]);
+        setEdges([]);
+
         decodeFile(file).then((kvnodes) => {
           const graph = kvnodes_to_graph(kvnodes);
 
