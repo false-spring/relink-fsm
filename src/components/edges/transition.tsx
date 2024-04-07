@@ -5,7 +5,12 @@ import {
   getStraightPath,
 } from "reactflow";
 
-import { Transition } from "@/types";
+import { NodeType, Transition } from "@/types";
+
+type TransitionData = {
+  value: Transition;
+  conditions: NodeType[];
+};
 
 export function TransitionEdge({
   id,
@@ -16,7 +21,7 @@ export function TransitionEdge({
   markerStart,
   markerEnd,
   data,
-}: EdgeProps<Transition>) {
+}: EdgeProps<TransitionData>) {
   const [edgePath, labelX, labelY] = getStraightPath({
     sourceX,
     sourceY,
@@ -50,7 +55,7 @@ export function TransitionEdge({
           <div className="text-lg text-black font-bold">
             Transition
             <br />
-            Conditions: ({data?.conditionGuids_.length})
+            Conditions: ({data?.conditions.length})
           </div>
         </div>
       </EdgeLabelRenderer>

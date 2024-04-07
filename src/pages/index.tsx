@@ -255,7 +255,7 @@ function NodeEditor() {
           <MiniMap nodeColor={nodeColor} />
           {selectedEdge && (
             <Panel position="top-right">
-              <div className="p-4 bg-gray-800 text-white rounded shadow-md">
+              <div className="px-4 bg-gray-800 text-white rounded shadow-md max-h-[50vh] nowheel overflow-y-scroll">
                 <div className="font-bold">Edge</div>
                 <pre className="font-mono">
                   {JSON.stringify(selectedEdge.data, null, " ")}

@@ -139,13 +139,24 @@ export function kvnodes_to_graph(
         guid_to_id_map[value.toNodeGuid_] ||
         namehash_to_id_map[value.toNodeGuid_];
 
+      const conditions = value.conditionGuids_?.map((guid) => {
+        const conditionNode = nodes.find(
+          (node) => getNodeGuid(node.data.value) === guid.Element,
+        );
+
+        return conditionNode?.data;
+      });
+
       return [
         {
           id: `transition-${from}-to-${to}`,
           type: "transition",
           source: from,
           target: to,
-          data: value,
+          data: {
+            value,
+            conditions,
+          },
           animated: true,
         },
       ];
