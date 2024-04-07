@@ -84,7 +84,6 @@ export function kvnodes_to_graph(
   kvnodes: KVNode[],
 ): Pick<Graph, "nodes" | "edges"> {
   const guid_to_id_map: Record<number, string> = {};
-  const namehash_to_id_map: Record<number, string> = {};
 
   const nodes = kvnodes
     .flatMap((element) => {
@@ -95,14 +94,9 @@ export function kvnodes_to_graph(
 
       const id = getNodeId(value);
       const guid = getNodeGuid(value);
-      const namehash = getNodeNameHash(value);
 
       if (guid) {
         guid_to_id_map[guid] = id;
-      }
-
-      if (namehash) {
-        namehash_to_id_map[namehash] = id;
       }
 
       return [
@@ -131,13 +125,9 @@ export function kvnodes_to_graph(
     if (node.data.key === "Transition") {
       const value = node.data.value as Transition;
 
-      const from =
-        guid_to_id_map[value.fromNodeGuid_] ||
-        namehash_to_id_map[value.fromNodeGuid_];
+      const from = guid_to_id_map[value.fromNodeGuid_];
 
-      const to =
-        guid_to_id_map[value.toNodeGuid_] ||
-        namehash_to_id_map[value.toNodeGuid_];
+      const to = guid_to_id_map[value.toNodeGuid_];
 
       const conditions = value.conditionGuids_?.map((guid) => {
         const conditionNode = nodes.find(
@@ -165,8 +155,7 @@ export function kvnodes_to_graph(
       if (!parentGuid) return [];
 
       const self = node.id;
-      const parent =
-        guid_to_id_map[parentGuid] || namehash_to_id_map[parentGuid];
+      const parent = guid_to_id_map[parentGuid];
 
       return [
         {
@@ -208,12 +197,6 @@ function getNodeParentGuid(nodeType: NodeType): number | null {
   if (typeof nodeType === "number") return null;
   if (isEmptyObject(nodeType)) return null;
   return (nodeType as BehaviorTreeComponent).parentGuid_;
-}
-
-function getNodeNameHash(nodeType: NodeType): number | null {
-  if (typeof nodeType === "number") return null;
-  if (isEmptyObject(nodeType)) return null;
-  return (nodeType as FSMNode).nameHash_;
 }
 
 function getNodeId(nodeType: NodeType): string {
