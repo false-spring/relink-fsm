@@ -1,17 +1,20 @@
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import ReactFlow, {
   Background,
   BackgroundVariant,
   Controls,
+  Edge,
   MiniMap,
   Node,
   OnConnect,
+  Panel,
   ReactFlowProvider,
   useReactFlow,
 } from "reactflow";
 import { useShallow } from "zustand/react/shallow";
 
+import { TransitionEdge } from "@/components/edges/transition";
 import { DefaultNode } from "@/components/nodes/default";
 import { Button } from "@/components/ui/button";
 import useGraphStore from "@/stores/use-graph-store";
@@ -96,11 +99,10 @@ const nodeColor = (node: Node) => {
   }
 };
 
+const nodeTypes = { defaultComponent: DefaultNode };
+const edgeTypes = { transition: TransitionEdge };
+
 function NodeEditor() {
-  const paneRef = useRef<HTMLDivElement | null>(null);
-
-  const { screenToFlowPosition } = useReactFlow();
-
   const {
     nodes,
     edges,
@@ -120,9 +122,9 @@ function NodeEditor() {
       removeNode: state.removeNode,
     })),
   );
-
-  const nodeTypes = useMemo(() => ({ defaultComponent: DefaultNode }), []);
-
+  const paneRef = useRef<HTMLDivElement | null>(null);
+  const { screenToFlowPosition } = useReactFlow();
+  const [selectedEdge, setSelectedEdge] = useState<Edge | undefined>(undefined);
   const [isPaneContextMenuOpen, setIsPaneContextMenuOpen] = useState(false);
   const [paneContextMenuPosition, setPaneContextMenuPosition] =
     useState<PanePosition>({
@@ -141,6 +143,10 @@ function NodeEditor() {
     right: undefined,
     bottom: undefined,
   });
+  const onSelectEdge = useCallback(
+    (_event: React.MouseEvent, edge: Edge) => setSelectedEdge(edge),
+    [setSelectedEdge],
+  );
 
   const onConnect: OnConnect = useCallback(addEdge, [addEdge]);
 
@@ -211,6 +217,7 @@ function NodeEditor() {
   const handlePaneClick = useCallback(() => {
     setIsPaneContextMenuOpen(false);
     setIsNodeContextMenuOpen(false);
+    setSelectedEdge(undefined);
   }, []);
 
   const handleRemoveNode = useCallback(
@@ -230,6 +237,7 @@ function NodeEditor() {
           nodes={nodes}
           edges={edges}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
           onNodesChange={updateNodes}
           onEdgesChange={updateEdges}
           onPaneContextMenu={handlePaneContextMenu}
@@ -240,10 +248,21 @@ function NodeEditor() {
           maxZoom={1}
           minZoom={0.0001}
           proOptions={proOptions}
+          onEdgeClick={onSelectEdge}
         >
           <Background variant={BackgroundVariant.Dots} gap={24} size={1} />
           <Controls />
           <MiniMap nodeColor={nodeColor} />
+          {selectedEdge && (
+            <Panel position="top-right">
+              <div className="p-4 bg-gray-800 text-white rounded shadow-md">
+                <div className="font-bold">Edge</div>
+                <pre className="font-mono">
+                  {JSON.stringify(selectedEdge.data, null, " ")}
+                </pre>
+              </div>
+            </Panel>
+          )}
         </ReactFlow>
       </div>
       {isPaneContextMenuOpen && (

@@ -38,19 +38,19 @@ import {
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-const nodeWidth = 300;
-const nodeHeight = 36;
+const nodeWidth = 500;
+const nodeHeight = 40;
 
 const getLayoutedElements = (
   nodes: Node[],
   edges: Edge[],
-  direction = "TB",
+  direction = "LR",
 ) => {
   const isHorizontal = direction === "LR";
   dagreGraph.setGraph({ rankdir: direction });
 
   nodes.forEach((node) => {
-    const height = Object.keys(node.data.value).length * 55 + 36;
+    const height = Object.keys(node.data.value).length * 55 + nodeHeight;
 
     dagreGraph.setNode(node.id, { width: nodeWidth, height });
   });
@@ -131,8 +131,6 @@ export function kvnodes_to_graph(
     if (node.data.key === "Transition") {
       const value = node.data.value as Transition;
 
-      const self = node.id;
-
       const from =
         guid_to_id_map[value.fromNodeGuid_] ||
         namehash_to_id_map[value.fromNodeGuid_];
@@ -141,27 +139,14 @@ export function kvnodes_to_graph(
         guid_to_id_map[value.toNodeGuid_] ||
         namehash_to_id_map[value.toNodeGuid_];
 
-      const conditions = value.conditionGuids_.map((container) => {
-        const condition = guid_to_id_map[container.Element];
-
-        return {
-          id: `${self}-to-${condition}`,
-          source: condition,
-          target: self,
-        };
-      });
-
       return [
-        ...conditions,
         {
-          id: `${self}-to-${from}`,
+          id: `transition-${from}-to-${to}`,
+          type: "transition",
           source: from,
-          target: self,
-        },
-        {
-          id: `${self}-to-${to}`,
-          source: self,
           target: to,
+          data: value,
+          animated: true,
         },
       ];
     } else {
@@ -182,8 +167,10 @@ export function kvnodes_to_graph(
     }
   });
 
+  const filteredNodes = nodes.filter((node) => node.data.key !== "Transition");
+
   const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-    nodes,
+    filteredNodes,
     edges,
   );
 
