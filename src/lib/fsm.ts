@@ -137,6 +137,14 @@ export function kvnodes_to_graph(
         return conditionNode?.data;
       });
 
+      if (value.conditionGuid_ !== undefined && value.conditionGuid_ !== 0) {
+        const conditionNode = nodes.find(
+          (node) => getNodeGuid(node.data.value) === value.conditionGuid_,
+        );
+
+        conditions.push(conditionNode?.data);
+      }
+
       return [
         {
           id: `transition-${from}-to-${to}`,
