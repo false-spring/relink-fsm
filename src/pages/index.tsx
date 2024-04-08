@@ -124,7 +124,9 @@ function NodeEditor() {
   );
   const paneRef = useRef<HTMLDivElement | null>(null);
   const { screenToFlowPosition } = useReactFlow();
-  const [selectedEdge, setSelectedEdge] = useState<Edge | undefined>(undefined);
+  const [selectedNodeEdge, setSelectedNodeEdge] = useState<
+    Node | Edge | undefined
+  >(undefined);
   const [isPaneContextMenuOpen, setIsPaneContextMenuOpen] = useState(false);
   const [paneContextMenuPosition, setPaneContextMenuPosition] =
     useState<PanePosition>({
@@ -143,9 +145,15 @@ function NodeEditor() {
     right: undefined,
     bottom: undefined,
   });
+
   const onSelectEdge = useCallback(
-    (_event: React.MouseEvent, edge: Edge) => setSelectedEdge(edge),
-    [setSelectedEdge],
+    (_event: React.MouseEvent, edge: Edge) => setSelectedNodeEdge(edge),
+    [setSelectedNodeEdge],
+  );
+
+  const onSelectNode = useCallback(
+    (_event: React.MouseEvent, node: Node) => setSelectedNodeEdge(node),
+    [setSelectedNodeEdge],
   );
 
   const onConnect: OnConnect = useCallback(addEdge, [addEdge]);
@@ -217,7 +225,7 @@ function NodeEditor() {
   const handlePaneClick = useCallback(() => {
     setIsPaneContextMenuOpen(false);
     setIsNodeContextMenuOpen(false);
-    setSelectedEdge(undefined);
+    setSelectedNodeEdge(undefined);
   }, []);
 
   const handleRemoveNode = useCallback(
@@ -249,16 +257,17 @@ function NodeEditor() {
           minZoom={0.0001}
           proOptions={proOptions}
           onEdgeClick={onSelectEdge}
+          onNodeClick={onSelectNode}
         >
           <Background variant={BackgroundVariant.Dots} gap={24} size={1} />
           <Controls />
           <MiniMap nodeColor={nodeColor} />
-          {selectedEdge && (
+          {selectedNodeEdge && (
             <Panel position="top-right">
               <div className="px-4 bg-gray-800 text-white rounded shadow-md max-h-[50vh] nowheel overflow-y-scroll">
-                <div className="font-bold">Edge</div>
+                <div className="font-bold">{selectedNodeEdge.data?.label}</div>
                 <pre className="font-mono">
-                  {JSON.stringify(selectedEdge.data, null, " ")}
+                  {JSON.stringify(selectedNodeEdge.data, null, " ")}
                 </pre>
               </div>
             </Panel>

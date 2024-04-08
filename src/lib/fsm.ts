@@ -152,6 +152,7 @@ export function kvnodes_to_graph(
           source: from,
           target: to,
           data: {
+            label: "Transition",
             value,
             conditions,
           },
