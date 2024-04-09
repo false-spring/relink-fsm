@@ -13,6 +13,7 @@ import ReactFlow, {
   ReactFlowProvider,
   useReactFlow,
 } from "reactflow";
+import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 
 import { TransitionEdge } from "@/components/edges/transition";
@@ -132,6 +133,7 @@ function NodeEditor() {
   const [selectedNodeEdge, setSelectedNodeEdge] = useState<
     Node | Edge | undefined
   >(undefined);
+  const [editorValue, setEditorValue] = useState<string>("");
 
   const [isPaneContextMenuOpen, setIsPaneContextMenuOpen] = useState(false);
   const [paneContextMenuPosition, setPaneContextMenuPosition] =
@@ -153,13 +155,19 @@ function NodeEditor() {
   });
 
   const onSelectEdge = useCallback(
-    (_event: React.MouseEvent, edge: Edge) => setSelectedNodeEdge(edge),
-    [setSelectedNodeEdge],
+    (_event: React.MouseEvent, edge: Edge) => {
+      setSelectedNodeEdge(edge);
+      setEditorValue(JSON.stringify(edge.data, null, " "));
+    },
+    [setSelectedNodeEdge, setEditorValue],
   );
 
   const onSelectNode = useCallback(
-    (_event: React.MouseEvent, node: Node) => setSelectedNodeEdge(node),
-    [setSelectedNodeEdge],
+    (_event: React.MouseEvent, node: Node) => {
+      setSelectedNodeEdge(node);
+      setEditorValue(JSON.stringify(node.data, null, " "));
+    },
+    [setSelectedNodeEdge, setEditorValue],
   );
 
   const onConnect: OnConnect = useCallback(
@@ -249,14 +257,15 @@ function NodeEditor() {
   );
 
   const updateNodeValue = useCallback(
-    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    (value: string) => {
       if (!selectedNodeEdge) return;
       if (selectedNodeEdge.type !== "defaultComponent") return;
 
-      const value = event.target.value;
       const validJson = tryParseJSON(value);
 
-      if (!validJson) return;
+      if (!validJson) {
+        return toast("Invalid JSON. Please check your syntax.");
+      }
 
       const newNode = {
         ...selectedNodeEdge,
@@ -265,6 +274,8 @@ function NodeEditor() {
 
       setSelectedNodeEdge(newNode);
       updateNode(newNode as Node);
+
+      return toast("Node updated successfully.");
     },
     [selectedNodeEdge, updateNode, setSelectedNodeEdge],
   );
@@ -296,13 +307,24 @@ function NodeEditor() {
           <MiniMap nodeColor={nodeColor} />
           {selectedNodeEdge && (
             <Panel position="top-right">
-              <div className="px-4 pb-8 bg-gray-800 text-white rounded shadow-md w-[600px] h-[50vh] nowheel">
+              <div className="px-4 pt-4 pb-24 bg-gray-800 text-white rounded shadow-md w-[600px] h-[50vh] nowheel">
                 <div className="font-bold">{selectedNodeEdge.data?.label}</div>
                 <Textarea
-                  className="font-mono bg-gray-900 text-white w-full h-full resize-none"
-                  value={JSON.stringify(selectedNodeEdge.data, null, " ")}
-                  onChange={updateNodeValue}
+                  className="font-mono mt-2 bg-gray-900 text-white w-full h-full resize-none"
+                  value={editorValue}
+                  onChange={(e) => {
+                    setEditorValue(e.target.value);
+                  }}
                 />
+                <div className="mt-2 flex justify-end">
+                  <Button
+                    onClick={() => {
+                      updateNodeValue(editorValue);
+                    }}
+                  >
+                    Save
+                  </Button>
+                </div>
               </div>
             </Panel>
           )}

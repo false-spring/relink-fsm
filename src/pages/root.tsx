@@ -12,6 +12,7 @@ import {
   MenubarShortcut,
   MenubarTrigger,
 } from "@/components/ui/menubar";
+import { Toaster } from "@/components/ui/sonner";
 import { kvnodes_to_graph } from "@/lib/fsm";
 import { decodeFile, encodeFile } from "@/lib/msgpack";
 import useGraphStore from "@/stores/use-graph-store";
@@ -152,6 +153,7 @@ export default function Root() {
 
       <hr />
       <Outlet />
+      <Toaster />
       {import.meta.env.DEV && <TanStackRouterDevtools />}
     </>
   );
