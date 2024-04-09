@@ -105,7 +105,7 @@ export default function Root() {
         suggestedName: filename,
         types: [
           {
-            description: "Messagepack",
+            description: "MessagePack",
             accept: {
               "application/msgpack": [".msg"],
             },
