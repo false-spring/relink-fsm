@@ -13,7 +13,7 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar";
 import { kvnodes_to_graph } from "@/lib/fsm";
-import { decodeFile } from "@/lib/msgpack";
+import { decodeFile, encodeFile } from "@/lib/msgpack";
 import useGraphStore from "@/stores/use-graph-store";
 import { KVNode } from "@/types";
 
@@ -101,10 +101,16 @@ export default function Root() {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const fileHandle = await (window as any).showSaveFilePicker({
-        suggestedName: filename.replace(".msg", ".json"),
+        suggestedName: filename,
         types: [
           {
-            description: "FSM",
+            description: "Messagepack",
+            accept: {
+              "application/msgpack": [".msg"],
+            },
+          },
+          {
+            description: "JSON",
             accept: {
               "application/json": [".json"],
             },
@@ -114,8 +120,12 @@ export default function Root() {
 
       const writable = await fileHandle.createWritable();
 
-      await writable.write(JSON.stringify(data, null, 2));
-      await writable.close();
+      if (fileHandle.name.endsWith(".msg")) {
+        await encodeFile(data, fileHandle.name, writable);
+      } else if (fileHandle.name.endsWith(".json")) {
+        await writable.write(JSON.stringify(data, null, 2));
+        await writable.close();
+      }
     },
     [filename, nodes, edges],
   );
