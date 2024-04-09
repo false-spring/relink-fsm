@@ -21,6 +21,7 @@ export type GraphStore = Graph & {
   addNode: (node: Node) => void;
   setNodes: (nodes: Node[]) => void;
   setEdges: (edges: Edge[]) => void;
+  updateNode: (node: Node) => void;
 };
 
 const useGraphStore = create<GraphStore>()((set, get) => ({
@@ -45,6 +46,10 @@ const useGraphStore = create<GraphStore>()((set, get) => ({
   addEdge: (params) =>
     set((state) => ({ edges: addEdge(params, state.edges) })),
   addNode: (node) => set((state) => ({ nodes: [...state.nodes, node] })),
+  updateNode: (node) =>
+    set((state) => {
+      return { nodes: state.nodes.map((n) => (n.id === node.id ? node : n)) };
+    }),
 }));
 
 export default useGraphStore;

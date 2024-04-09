@@ -3,6 +3,7 @@ import { useCallback, useRef, useState } from "react";
 import ReactFlow, {
   Background,
   BackgroundVariant,
+  Connection,
   Controls,
   Edge,
   MiniMap,
@@ -17,6 +18,8 @@ import { useShallow } from "zustand/react/shallow";
 import { TransitionEdge } from "@/components/edges/transition";
 import { DefaultNode } from "@/components/nodes/default";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { tryParseJSON } from "@/lib/utils";
 import useGraphStore from "@/stores/use-graph-store";
 
 const proOptions = { hideAttribution: true };
@@ -111,6 +114,7 @@ function NodeEditor() {
     addEdge,
     addNode,
     removeNode,
+    updateNode,
   } = useGraphStore(
     useShallow((state) => ({
       nodes: state.nodes,
@@ -120,6 +124,7 @@ function NodeEditor() {
       addEdge: state.addEdge,
       addNode: state.addNode,
       removeNode: state.removeNode,
+      updateNode: state.updateNode,
     })),
   );
   const paneRef = useRef<HTMLDivElement | null>(null);
@@ -127,6 +132,7 @@ function NodeEditor() {
   const [selectedNodeEdge, setSelectedNodeEdge] = useState<
     Node | Edge | undefined
   >(undefined);
+
   const [isPaneContextMenuOpen, setIsPaneContextMenuOpen] = useState(false);
   const [paneContextMenuPosition, setPaneContextMenuPosition] =
     useState<PanePosition>({
@@ -156,7 +162,12 @@ function NodeEditor() {
     [setSelectedNodeEdge],
   );
 
-  const onConnect: OnConnect = useCallback(addEdge, [addEdge]);
+  const onConnect: OnConnect = useCallback(
+    (connection: Connection) => {
+      addEdge(connection as Edge);
+    },
+    [addEdge],
+  );
 
   const handleAddNode = useCallback(
     (position: Position) => {
@@ -237,6 +248,27 @@ function NodeEditor() {
     [removeNode],
   );
 
+  const updateNodeValue = useCallback(
+    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+      if (!selectedNodeEdge) return;
+      if (selectedNodeEdge.type !== "defaultComponent") return;
+
+      const value = event.target.value;
+      const validJson = tryParseJSON(value);
+
+      if (!validJson) return;
+
+      const newNode = {
+        ...selectedNodeEdge,
+        data: validJson,
+      };
+
+      setSelectedNodeEdge(newNode);
+      updateNode(newNode as Node);
+    },
+    [selectedNodeEdge, updateNode, setSelectedNodeEdge],
+  );
+
   return (
     <div className="text-lg w-full absolute overflow-clip">
       <div className="w-screen h-[calc(100vh-50px)]">
@@ -264,11 +296,13 @@ function NodeEditor() {
           <MiniMap nodeColor={nodeColor} />
           {selectedNodeEdge && (
             <Panel position="top-right">
-              <div className="px-4 bg-gray-800 text-white rounded shadow-md max-h-[50vh] nowheel overflow-y-scroll">
+              <div className="px-4 pb-8 bg-gray-800 text-white rounded shadow-md w-[600px] h-[50vh] nowheel">
                 <div className="font-bold">{selectedNodeEdge.data?.label}</div>
-                <pre className="font-mono">
-                  {JSON.stringify(selectedNodeEdge.data, null, " ")}
-                </pre>
+                <Textarea
+                  className="font-mono bg-gray-900 text-white w-full h-full resize-none"
+                  value={JSON.stringify(selectedNodeEdge.data, null, " ")}
+                  onChange={updateNodeValue}
+                />
               </div>
             </Panel>
           )}
