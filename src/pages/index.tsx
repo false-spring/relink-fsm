@@ -1,4 +1,8 @@
-import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
+import {
+  DocumentDuplicateIcon,
+  MinusIcon,
+  PlusIcon,
+} from "@heroicons/react/24/outline";
 import { useCallback, useRef, useState } from "react";
 import ReactFlow, {
   Background,
@@ -67,6 +71,7 @@ function PaneContextMenu({
 type NodeContextMenuProps = {
   id: string;
   removeNode: (id: string) => void;
+  duplicateNode: (id: string) => void;
 } & PanePosition;
 
 function NodeContextMenu({
@@ -76,6 +81,7 @@ function NodeContextMenu({
   right,
   bottom,
   removeNode,
+  duplicateNode,
 }: NodeContextMenuProps) {
   return (
     <div
@@ -83,6 +89,15 @@ function NodeContextMenu({
       className="absolute z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
       style={{ top, left, right, bottom }}
     >
+      <Button
+        variant="ghost"
+        role="menuitem"
+        className="w-full text-left justify-start px-2"
+        onClick={() => duplicateNode(id)}
+      >
+        <DocumentDuplicateIcon className="w-5 h-5 mr-2" />
+        Duplicate
+      </Button>
       <Button
         variant="ghost"
         role="menuitem"
@@ -256,6 +271,35 @@ function NodeEditor() {
     [removeNode],
   );
 
+  const handleDuplicateNode = useCallback(
+    (id: string) => {
+      const node = nodes.find((n) => n.id === id);
+
+      setIsPaneContextMenuOpen(false);
+      setIsNodeContextMenuOpen(false);
+
+      if (node) {
+        const id = Math.round(Math.random() * 10000000);
+
+        const newNode = {
+          ...node,
+          id: id.toString(),
+          position: { x: node.position.x + 50, y: node.position.y + 50 },
+          data: {
+            ...node.data,
+            value: {
+              ...node.data.value,
+              guid_: id,
+            },
+          },
+        };
+
+        addNode(newNode);
+      }
+    },
+    [nodes, addNode],
+  );
+
   const updateNodeValue = useCallback(
     (value: string) => {
       if (!selectedNodeEdge) return;
@@ -343,6 +387,7 @@ function NodeEditor() {
         <NodeContextMenu
           id={nodeContextMenuPosition.id || ""}
           removeNode={handleRemoveNode}
+          duplicateNode={handleDuplicateNode}
           top={nodeContextMenuPosition.top}
           left={nodeContextMenuPosition.left}
           right={nodeContextMenuPosition.right}
